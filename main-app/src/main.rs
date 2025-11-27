@@ -1,5 +1,6 @@
 use color_eyre::Result as CResult;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use ollama_rs::{Ollama, generation::completion::request::GenerationRequest};
 use ratatui::{
     DefaultTerminal, Frame,
     buffer::Buffer,
@@ -10,13 +11,28 @@ use ratatui::{
     widgets::{Block, Paragraph, Widget},
 };
 use std::io;
+use tokio;
 
-fn main() -> CResult<()> {
+async fn ollama_main() {
+    let ollama = Ollama::default();
+    let model = "deepseek-r2:latest".to_string();
+    let prompt = "This is a test".to_string();
+
+    let res = ollama.generate(GenerationRequest::new(model, prompt)).await;
+    if let Ok(res) = res {
+        println!("{}", res.response);
+    }
+}
+
+#[tokio::main]
+async fn main() -> CResult<()> {
     color_eyre::install()?;
-    let mut terminal = ratatui::init();
-    let app_result = App::default().run(&mut terminal);
-    ratatui::restore();
-    app_result
+    ollama_main().await;
+    Ok(())
+    // let mut terminal = ratatui::init();
+    // let app_result = App::default().run(&mut terminal);
+    // ratatui::restore();
+    // app_result
 }
 
 #[derive(Debug, Default)]
