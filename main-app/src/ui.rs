@@ -1,16 +1,13 @@
-use color_eyre::{Result as CResult, owo_colors::OwoColorize};
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use ollama_rs::{Ollama, generation::completion::request::GenerationRequest};
+use color_eyre::owo_colors::OwoColorize;
 use ratatui::{
-    DefaultTerminal, Frame,
     buffer::Buffer,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Stylize},
     symbols::border,
     text::{Line, Text},
-    widgets::{Block, Borders, Padding, Paragraph, Widget},
+    widgets::{Block, Borders, Paragraph, Widget},
 };
-use std::{fmt::Display, str::FromStr};
+use std::str::FromStr;
 
 use crate::state::{App, AppMode};
 
@@ -52,7 +49,7 @@ impl Widget for &App {
             .direction(Direction::Vertical)
             .constraints(vec![Constraint::Percentage(90), Constraint::Percentage(10)])
             .split(area);
-        let _block = Block::default()
+        Block::default()
             .borders(Borders::ALL)
             .title(title)
             .render(layout[0], buf);

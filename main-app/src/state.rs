@@ -1,17 +1,9 @@
-use color_eyre::{Result as CResult, owo_colors::OwoColorize};
+use color_eyre::Result as CResult;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use ollama_rs::{Ollama, generation::completion::request::GenerationRequest};
 use ratatui::{
     DefaultTerminal, Frame,
-    buffer::Buffer,
-    layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Stylize},
-    symbols::border,
-    text::{Line, Text},
-    widgets::{Block, Borders, Padding, Paragraph, Widget},
 };
-use std::{fmt::Display, str::FromStr};
-use tokio;
+use std::fmt::Display;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AppMode {
