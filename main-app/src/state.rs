@@ -1,8 +1,6 @@
 use color_eyre::Result as CResult;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
-use ratatui::{
-    DefaultTerminal, Frame,
-};
+use ratatui::{DefaultTerminal, Frame};
 use std::fmt::Display;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -98,4 +96,59 @@ impl App {
     fn exit(&mut self) {
         self.exit = true;
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct Input {
+    input_string: String,
+    cursor_index: usize,
+}
+
+impl Input {
+    const fn new() -> Self {
+        Self {
+            input_string: String::new(),
+            cursor_index: 0,
+        }
+    }
+
+    pub fn byte_index(&self) -> usize {
+        self.input_string
+            .char_indices()
+            .map(|(i, _)| i)
+            .nth(self.cursor_index)
+            .unwrap_or(self.input_string.len())
+    }
+
+    pub fn add_char(&mut self, input_char: char) {
+        self.input_string.insert(self.cursor_index, input_char);
+        self.move_right();
+    }
+
+    fn traverse(&mut self, left_right: bool) {
+        let indx = if left_right {
+            self.cursor_index.saturating_add(1)
+        } else {
+            self.cursor_index.saturating_sub(1)
+        };
+        self.cursor_index = self.clamp_cursor(indx)
+    }
+
+    pub fn move_left(&mut self) {
+        self.traverse(false)
+    }
+
+    pub fn move_right(&mut self) {
+        self.traverse(true)
+    }
+
+    pub fn clamp_cursor(&self, new_cursor_pos: usize) -> usize {
+        new_cursor_pos.clamp(0, self.input_string.chars().count())
+    }
+
+    pub fn reset_cursor(&mut self, new_cursor_pos: usize) {
+        self.cursor_index = 0;
+    }
+
+    fn delete_char(&mut self) {}
 }

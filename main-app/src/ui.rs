@@ -1,4 +1,3 @@
-use color_eyre::owo_colors::OwoColorize;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Direction, Layout, Rect},
@@ -42,6 +41,24 @@ impl Widget for AppMode {
     }
 }
 
+impl App {
+    fn bottom_rendering(&self, area: Rect, buf: &mut Buffer) {
+        let lay_bot = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
+            .split(area);
+        self.get_state().render(lay_bot[0], buf);
+    }
+
+    fn up_rendering(&self, area: Rect, buf: &mut Buffer) {
+        let lay_bot = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
+            .split(area);
+        self.get_state().render(lay_bot[0], buf);
+    }
+}
+
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from(" Personal Agentic LLM ".bold());
@@ -53,10 +70,6 @@ impl Widget for &App {
             .borders(Borders::ALL)
             .title(title)
             .render(layout[0], buf);
-        let lay_bot = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
-            .split(layout[1]);
-        self.get_state().render(lay_bot[0], buf);
+        self.bottom_rendering(layout[1], buf);
     }
 }
