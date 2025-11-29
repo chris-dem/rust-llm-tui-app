@@ -50,6 +50,7 @@ impl Display for MessageSender {
 pub struct App {
     // TODO: add
     // ollama_state: Ollama,
+    input: Input,
     chat: Vec<(MessageSender, String)>,
     is_polling: bool,
     app_mode: AppMode,
@@ -88,6 +89,10 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match (self.app_mode, key_event.code) {
             (AppMode::NavigationMode, KeyCode::Char('q')) => self.exit(),
+            (AppMode::ChatMode, KeyCode::Left) => self.input.move_left(),
+            (AppMode::ChatMode, KeyCode::Right) => self.input.move_right(),
+            (AppMode::ChatMode, KeyCode::Backspace) => self.input.delete_char(),
+            (AppMode::ChatMode, KeyCode::Char(c)) => self.input.add_char(c),
             (_, KeyCode::Esc) => self.app_mode = self.app_mode.toggle(),
             _ => {}
         }
@@ -100,8 +105,8 @@ impl App {
 
 #[derive(Debug, Clone)]
 pub struct Input {
-    input_string: String,
-    cursor_index: usize,
+    pub input_string: String,
+    pub cursor_index: usize,
 }
 
 impl Input {
@@ -121,7 +126,8 @@ impl Input {
     }
 
     pub fn add_char(&mut self, input_char: char) {
-        self.input_string.insert(self.cursor_index, input_char);
+        let indx = self.byte_index();
+        self.input_string.insert(indx, input_char);
         self.move_right();
     }
 
@@ -134,21 +140,34 @@ impl Input {
         self.cursor_index = self.clamp_cursor(indx)
     }
 
+    #[inline]
     pub fn move_left(&mut self) {
         self.traverse(false)
     }
 
+    #[inline]
     pub fn move_right(&mut self) {
         self.traverse(true)
     }
 
+    #[inline]
     pub fn clamp_cursor(&self, new_cursor_pos: usize) -> usize {
         new_cursor_pos.clamp(0, self.input_string.chars().count())
     }
 
-    pub fn reset_cursor(&mut self, new_cursor_pos: usize) {
-        self.cursor_index = 0;
+    pub fn delete_char(&mut self) {
+        if self.cursor_index == 0 {
+            return;
+        }
+        let lhs = self.input_string.chars().take(self.cursor_index - 1);
+        let rhs = self.input_string.chars().skip(self.cursor_index);
+        self.input_string = lhs.chain(rhs).collect::<_>();
+        self.move_left();
     }
+}
 
-    fn delete_char(&mut self) {}
+impl Default for Input {
+    fn default() -> Self {
+        Self::new()
+    }
 }

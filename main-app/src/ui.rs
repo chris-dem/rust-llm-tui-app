@@ -1,14 +1,14 @@
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Stylize},
+    style::{Color, Style, Stylize},
     symbols::border,
     text::{Line, Text},
     widgets::{Block, Borders, Paragraph, Widget},
 };
 use std::str::FromStr;
 
-use crate::state::{App, AppMode};
+use crate::state::{App, AppMode, Input};
 
 impl Widget for AppMode {
     fn render(self, area: Rect, buf: &mut Buffer)
@@ -71,5 +71,17 @@ impl Widget for &App {
             .title(title)
             .render(layout[0], buf);
         self.bottom_rendering(layout[1], buf);
+    }
+}
+
+impl Widget for &Input {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let title = Line::from(" Input Field ".bold());
+        let block = Block::default().borders(Borders::ALL).title(title);
+        Paragraph::new(self.input_string.as_str())
+            .centered()
+            .block(block)
+            .style(Style::default().fg(Color::Yellow))
+            .render(area, buf);
     }
 }
