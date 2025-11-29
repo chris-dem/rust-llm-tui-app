@@ -64,13 +64,18 @@ impl Widget for &App {
         let title = Line::from(" Personal Agentic LLM ".bold());
         let layout = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(vec![Constraint::Percentage(90), Constraint::Percentage(10)])
+            .constraints(vec![
+                Constraint::Percentage(80),
+                Constraint::Percentage(10),
+                Constraint::Percentage(10),
+            ])
             .split(area);
+        self.input.render(layout[1], buf);
         Block::default()
             .borders(Borders::ALL)
             .title(title)
             .render(layout[0], buf);
-        self.bottom_rendering(layout[1], buf);
+        self.bottom_rendering(layout[2], buf);
     }
 }
 

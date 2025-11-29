@@ -50,11 +50,11 @@ impl Display for MessageSender {
 pub struct App {
     // TODO: add
     // ollama_state: Ollama,
-    input: Input,
-    chat: Vec<(MessageSender, String)>,
-    is_polling: bool,
-    app_mode: AppMode,
-    exit: bool,
+    pub input: Input,
+    pub chat: Vec<(MessageSender, String)>,
+    pub is_polling: bool,
+    pub app_mode: AppMode,
+    pub exit: bool,
 }
 
 impl App {
